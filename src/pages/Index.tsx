@@ -1,13 +1,38 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React, { useEffect } from 'react';
+import PageTransition from '@/components/transitions/PageTransition';
+import PortfolioSummary from '@/components/portfolio/PortfolioSummary';
+import AssetChart from '@/components/portfolio/AssetChart';
+import AssetAllocation from '@/components/portfolio/AssetAllocation';
+import PerformanceList from '@/components/portfolio/PerformanceList';
+
+const Index: React.FC = () => {
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <PageTransition>
+      <div className="container mx-auto px-4 md:px-6 pt-24 pb-12">
+        <div className="space-y-8 max-w-6xl mx-auto">
+          {/* Portfolio Summary */}
+          <PortfolioSummary 
+            totalValue={180000} 
+            change={{ value: 2500, percentage: 1.41 }}
+          />
+          
+          {/* Chart */}
+          <AssetChart />
+          
+          {/* Asset Allocation */}
+          <AssetAllocation />
+          
+          {/* Top & Worst Performers */}
+          <PerformanceList />
+        </div>
       </div>
-    </div>
+    </PageTransition>
   );
 };
 
