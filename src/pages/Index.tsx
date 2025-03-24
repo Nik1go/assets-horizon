@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import PageTransition from '@/components/transitions/PageTransition';
 import PortfolioSummary from '@/components/portfolio/PortfolioSummary';
 import AssetChart from '@/components/portfolio/AssetChart';

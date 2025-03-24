@@ -1,7 +1,7 @@
 
-import React from 'react';
+
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import Card from '../ui/Card';
+import {Card} from '@/components/ui/card'
 import { cn } from '@/lib/utils';
 
 // Mock data for asset allocation

@@ -1,8 +1,6 @@
-
-import React from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Card from '../ui/Card';
+import {Card} from '@/components/ui/card'
 import { cn } from '@/lib/utils';
 
 interface PortfolioSummaryProps {
@@ -29,7 +27,7 @@ const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
   });
 
   return (
-    <Card className="w-full" glassEffect>
+    <Card className="w-full" >
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-start">
           <h2 className="text-xl font-medium text-muted-foreground">Mon Patrimoine</h2>

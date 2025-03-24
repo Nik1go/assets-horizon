@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PageTransition from '@/components/transitions/PageTransition';
 import SearchBar from '@/components/ui/SearchBar';
-import Card from '@/components/ui/Card';
-import Badge from '@/components/ui/Badge';
+import {Card} from '@/components/ui/Card';
+import {Badge} from '@/components/ui/Badge';
 import { TrendingUp, TrendingDown, Star, StarOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 

@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import Card from '../ui/Card';
+import {Card} from '@/components/ui/card'
 import { cn } from '@/lib/utils';
 
 interface TimeRange {

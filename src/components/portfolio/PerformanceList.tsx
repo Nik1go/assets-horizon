@@ -1,8 +1,9 @@
 
-import React from 'react';
+
 import { TrendingUp, TrendingDown } from 'lucide-react';
-import Card from '../ui/Card';
-import Badge from '../ui/Badge';
+
+import {Card} from '@/components/ui/card'
+import {Badge} from '@/components/ui/badge'
 import { cn } from '@/lib/utils';
 
 interface AssetPerformance {
