@@ -1,5 +1,4 @@
-
-import React from 'react';
+import React from "react";
 import { cn } from "@/lib/utils";
 
 interface CardProps {
@@ -9,17 +8,19 @@ interface CardProps {
   hoverEffect?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ 
-  children, 
-  className, 
+const CustomCard: React.FC<CardProps> = ({
+  children,
+  className,
   glassEffect = false,
-  hoverEffect = false 
+  hoverEffect = false,
 }) => {
   return (
-    <div 
+    <div
       className={cn(
         "rounded-lg p-5 shadow-sm transition-all duration-300",
-        glassEffect ? "glass-card shadow-lg" : "bg-card text-card-foreground border",
+        glassEffect
+          ? "glass-card shadow-lg"
+          : "bg-card text-card-foreground border",
         hoverEffect && "hover-lift",
         className
       )}
@@ -29,4 +30,4 @@ const Card: React.FC<CardProps> = ({
   );
 };
 
-export default Card;
+export default CustomCard;

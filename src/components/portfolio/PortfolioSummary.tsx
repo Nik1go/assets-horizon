@@ -1,7 +1,7 @@
-import { TrendingUp, TrendingDown } from 'lucide-react';
-import { motion } from 'framer-motion';
-import {Card} from '@/components/ui/card'
-import { cn } from '@/lib/utils';
+import { TrendingUp, TrendingDown } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import CustomCard from "@/components/ui/custom-card";
 
 interface PortfolioSummaryProps {
   totalValue: number;
@@ -15,26 +15,28 @@ interface PortfolioSummaryProps {
 const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
   totalValue,
   change,
-  period = 'aujourd\'hui'
+  period = "aujourd'hui",
 }) => {
   const isPositive = change.value >= 0;
-  
-  const formatter = new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'EUR',
+
+  const formatter = new Intl.NumberFormat("fr-FR", {
+    style: "currency",
+    currency: "EUR",
     minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    maximumFractionDigits: 2,
   });
 
   return (
-    <Card className="w-full" >
+    <CustomCard className="w-full">
       <div className="flex flex-col gap-3">
         <div className="flex justify-between items-start">
-          <h2 className="text-xl font-medium text-muted-foreground">Mon Patrimoine</h2>
+          <h2 className="text-xl font-medium text-muted-foreground">
+            Mon Patrimoine
+          </h2>
           <span className="text-sm text-muted-foreground">{period}</span>
         </div>
-        
-        <motion.div 
+
+        <motion.div
           className="mt-2"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -46,21 +48,29 @@ const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({
             </span>
           </div>
         </motion.div>
-        
+
         <div className="flex items-center gap-2 mt-1">
-          <div className={cn(
-            "flex items-center gap-1 text-sm font-medium",
-            isPositive ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-          )}>
+          <div
+            className={cn(
+              "flex items-center gap-1 text-sm font-medium",
+              isPositive
+                ? "text-green-600 dark:text-green-400"
+                : "text-red-600 dark:text-red-400"
+            )}
+          >
             {isPositive ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
             <span>
-              {isPositive ? '+' : ''}{formatter.format(change.value)} 
-              <span className="ml-1">({isPositive ? '+' : ''}{change.percentage.toFixed(2)}%)</span>
+              {isPositive ? "+" : ""}
+              {formatter.format(change.value)}
+              <span className="ml-1">
+                ({isPositive ? "+" : ""}
+                {change.percentage.toFixed(2)}%)
+              </span>
             </span>
           </div>
         </div>
       </div>
-    </Card>
+    </CustomCard>
   );
 };
 
