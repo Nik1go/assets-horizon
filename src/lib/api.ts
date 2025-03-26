@@ -1,5 +1,5 @@
 
-import { supabase } from './supabase';
+import { supabase, AssetCategoryDB, AssetDB, getCurrentUser } from './supabase';
 
 // Types pour les actifs du portefeuille
 export interface AssetCategory {
@@ -23,36 +23,93 @@ export interface Asset {
 
 // Fonctions pour gérer les catégories d'actifs
 export const fetchAssetCategories = async (): Promise<AssetCategory[]> => {
-  const { data, error } = await supabase
+  const { data: categories, error: categoriesError } = await supabase
     .from('asset_categories')
     .select('*');
 
-  if (error) {
-    console.error('Erreur lors de la récupération des catégories:', error);
-    throw error;
+  if (categoriesError) {
+    console.error('Erreur lors de la récupération des catégories:', categoriesError);
+    throw categoriesError;
   }
 
-  return data || [];
+  // Récupérer l'utilisateur connecté
+  const user = await getCurrentUser();
+  if (!user) {
+    return [];
+  }
+
+  // Récupérer les actifs de l'utilisateur
+  const { data: assets, error: assetsError } = await supabase
+    .from('assets')
+    .select('*')
+    .eq('user_id', user.id);
+
+  if (assetsError) {
+    console.error('Erreur lors de la récupération des actifs:', assetsError);
+    throw assetsError;
+  }
+
+  // Calculer la valeur totale et le changement pour chaque catégorie
+  return (categories as AssetCategoryDB[]).map(category => {
+    const categoryAssets = (assets || []).filter(asset => asset.category_id === category.id);
+    const totalValue = categoryAssets.reduce((sum, asset) => sum + (asset.value || 0), 0);
+    
+    // Calculer le changement (en supposant que la valeur avant changement est value / (1 + change/100))
+    const totalValueBefore = categoryAssets.reduce(
+      (sum, asset) => sum + ((asset.value || 0) / (1 + asset.change / 100)),
+      0
+    );
+    
+    const changeValue = totalValue - totalValueBefore;
+    const changePercentage = totalValueBefore > 0 
+      ? (changeValue / totalValueBefore) * 100 
+      : 0;
+    
+    return {
+      id: category.id,
+      name: category.name,
+      totalValue,
+      change: {
+        value: parseFloat(changeValue.toFixed(2)),
+        percentage: parseFloat(changePercentage.toFixed(2))
+      }
+    };
+  });
 };
 
-export const fetchUserAssets = async (userId: string): Promise<Asset[]> => {
+export const fetchUserAssets = async (): Promise<Asset[]> => {
+  const user = await getCurrentUser();
+  if (!user) {
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('assets')
     .select('*')
-    .eq('user_id', userId);
+    .eq('user_id', user.id);
 
   if (error) {
     console.error('Erreur lors de la récupération des actifs:', error);
     throw error;
   }
 
-  return data || [];
+  return data as Asset[] || [];
 };
 
-export const addAsset = async (asset: Omit<Asset, 'id'>): Promise<Asset> => {
+export const addAsset = async (asset: Omit<Asset, 'id' | 'user_id' | 'value'>): Promise<Asset> => {
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error('Utilisateur non connecté');
+  }
+
+  const newAsset = {
+    ...asset,
+    user_id: user.id
+  };
+
   const { data, error } = await supabase
     .from('assets')
-    .insert([asset])
+    .insert([newAsset])
     .select()
     .single();
 
@@ -61,14 +118,20 @@ export const addAsset = async (asset: Omit<Asset, 'id'>): Promise<Asset> => {
     throw error;
   }
 
-  return data;
+  return data as Asset;
 };
 
-export const updateAsset = async (id: string, updates: Partial<Asset>): Promise<Asset> => {
+export const updateAsset = async (id: string, updates: Partial<Omit<Asset, 'id' | 'user_id'>>): Promise<Asset> => {
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error('Utilisateur non connecté');
+  }
+
   const { data, error } = await supabase
     .from('assets')
     .update(updates)
     .eq('id', id)
+    .eq('user_id', user.id)
     .select()
     .single();
 
@@ -77,14 +140,20 @@ export const updateAsset = async (id: string, updates: Partial<Asset>): Promise<
     throw error;
   }
 
-  return data;
+  return data as Asset;
 };
 
 export const deleteAsset = async (id: string): Promise<void> => {
+  const user = await getCurrentUser();
+  if (!user) {
+    throw new Error('Utilisateur non connecté');
+  }
+
   const { error } = await supabase
     .from('assets')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('user_id', user.id);
 
   if (error) {
     console.error('Erreur lors de la suppression de l\'actif:', error);
