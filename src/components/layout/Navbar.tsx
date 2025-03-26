@@ -1,16 +1,22 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, Search, PieChart, Menu, X } from 'lucide-react';
+import { Home, Search, PieChart, Menu, X, LogOut, User } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,6 +37,15 @@ const Navbar: React.FC = () => {
     { path: '/search', label: 'Recherche', icon: Search },
     { path: '/portfolio', label: 'Portefeuille', icon: PieChart },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast({
+      title: "Déconnexion réussie",
+      description: "Vous avez été déconnecté avec succès",
+    });
+    navigate('/login');
+  };
 
   return (
     <header 
@@ -80,6 +95,25 @@ const Navbar: React.FC = () => {
                 </Link>
               );
             })}
+            
+            {/* User info and logout */}
+            {user && (
+              <div className="flex items-center ml-4 space-x-2">
+                <div className="flex items-center gap-1 text-sm text-foreground/70">
+                  <User size={16} />
+                  <span className="hidden md:inline">{user.email?.split('@')[0]}</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1"
+                >
+                  <LogOut size={16} />
+                  <span className="hidden md:inline">Déconnexion</span>
+                </Button>
+              </div>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
@@ -122,6 +156,18 @@ const Navbar: React.FC = () => {
                 </Link>
               );
             })}
+            
+            {/* Logout button for mobile */}
+            {user && (
+              <Button 
+                variant="outline" 
+                onClick={handleSignOut}
+                className="mt-4 w-full justify-start"
+              >
+                <LogOut size={18} className="mr-2" />
+                Déconnexion
+              </Button>
+            )}
           </nav>
         </motion.div>
       )}
